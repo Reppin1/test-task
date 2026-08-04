@@ -1,0 +1,106 @@
+name: crypto-deposit-desk
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: desk-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      RUN_MIGRATIONS: "true"
+      RUN_SEED: "true"
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Обработчик очереди: sync-джобы кошельков (Redis).
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: desk-queue
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      RUN_MIGRATIONS: "false"
+      RUN_SEED: "false"
+    command: php artisan queue:work redis --tries=3 --backoff=10 --sleep=1 --max-time=3600
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      app:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Планировщик: раз в 5 минут ставит sync-джобы (см. routes/console.php).
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: desk-scheduler
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      RUN_MIGRATIONS: "false"
+      RUN_SEED: "false"
+    command: php artisan schedule:work
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      app:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    container_name: desk-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE:-deposit_desk}"
+      MYSQL_USER: "${DB_USERNAME:-deposit}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-secret}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
+    ports:
+      - "${DB_FORWARD_PORT:-33061}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: desk-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_FORWARD_PORT:-63791}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-data:
+  redis-data:
