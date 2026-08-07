@@ -13,7 +13,7 @@
 | БД | MySQL 8 (в тестах — SQLite in-memory) |
 | Очереди / кэш | Redis (`predis`) |
 | Инфраструктура | Docker Compose: app + queue + scheduler + mysql + redis |
-| Тесты | PHPUnit 10, 57 тестов |
+| Тесты | PHPUnit 10, 58 тестов |
 | Качество | Pint (`laravel` preset + `declare_strict_types`), Larastan level 5 |
 
 ---
@@ -71,7 +71,8 @@ docker compose exec app vendor/bin/phpunit
 composer install && cp .env.example .env && php artisan key:generate
 ```
 
-Затем в `.env`: `DB_CONNECTION=sqlite`, `QUEUE_CONNECTION=sync`, `CACHE_STORE=file`, `SESSION_DRIVER=file`,
+Затем в `.env`: `DB_CONNECTION=sqlite`, **`DB_DATABASE=database/database.sqlite`** (иначе Laravel создаст файл
+БД с именем из `DB_DATABASE` в корне проекта), `QUEUE_CONNECTION=sync`, `CACHE_STORE=file`, `SESSION_DRIVER=file`,
 создать пустой файл `database/database.sqlite` и выполнить:
 
 ```bash
@@ -262,7 +263,7 @@ vendor/bin/phpunit
 ```
 
 ```
-OK (57 tests, 160 assertions)
+OK (58 tests, 165 assertions)
 ```
 
 Сеть в тестах не используется: везде `Http::fake()` + `Http::preventStrayRequests()`.

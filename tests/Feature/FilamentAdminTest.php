@@ -9,6 +9,8 @@ use App\Filament\Resources\ClientResource;
 use App\Filament\Resources\DepositResource;
 use App\Filament\Resources\SyncRunResource;
 use App\Filament\Resources\WalletResource;
+use App\Filament\Widgets\DepositsOverview;
+use App\Filament\Widgets\LatestSyncRuns;
 use App\Jobs\SyncWalletDepositsJob;
 use App\Models\Client;
 use App\Models\Deposit;
@@ -122,6 +124,22 @@ class FilamentAdminTest extends TestCase
             'address' => 'TAUN6FwrnwwmaEqYcckffC7wYmbaS6cBiX',
             'client_id' => $client->id,
         ]);
+    }
+
+    #[Test]
+    public function dashboard_widgets_render_with_data(): void
+    {
+        $wallet = Wallet::factory()->for(Client::factory())->create();
+        Deposit::factory()->forWallet($wallet)->create(['amount' => '12.500000']);
+
+        // Виджеты Filament грузятся лениво, поэтому проверяем сами Livewire-компоненты.
+        Livewire::test(DepositsOverview::class)
+            ->assertSuccessful()
+            ->assertSee('Confirmed USDT')
+            ->assertSee('12.5')
+            ->assertSee('Active wallets');
+
+        Livewire::test(LatestSyncRuns::class)->assertSuccessful();
     }
 
     #[Test]

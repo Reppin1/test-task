@@ -22,3 +22,6 @@ yarn-error.log
 # Локальная SQLite-БД (используется только для разработки без Docker)
 /database/*.sqlite
 /database/*.sqlite-journal
+# Если при переключении на SQLite забыть поправить DB_DATABASE, файл БД
+# создастся в корне с именем из .env — не тащим его в репозиторий.
+/deposit_desk

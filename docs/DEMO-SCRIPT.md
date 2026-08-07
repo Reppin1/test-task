@@ -64,4 +64,4 @@ curl "http://localhost:8000/api/deposits?status=confirmed&per_page=5"
    второй прогон даёт `created = 0`.
 3. Деньги: `decimal(36,6)` и строки, `TokenAmount::fromBaseUnits()` вместо float.
 4. Ошибки: 429/5xx ретраятся, 4xx — нет; любой исход виден в `sync_runs`, а не только в логах.
-5. Тесты: 57 штук, сеть замокана `Http::fake()` + `preventStrayRequests()`.
+5. Тесты: 58 штук, сеть замокана `Http::fake()` + `preventStrayRequests()`.

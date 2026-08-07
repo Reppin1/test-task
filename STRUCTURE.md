@@ -93,7 +93,7 @@ tests/
 ├── Concerns/InteractsWithTronScan.php   Http::fake на фикстуре + preventStrayRequests
 ├── Unit/{TronAddressTest,TokenAmountTest}.php
 └── Feature/{DepositSyncServiceTest,SyncDepositsCommandTest,FakeTronScanDriverTest,
-             DepositsApiTest,FilamentAdminTest,ExampleTest}.php   — 57 тестов, сеть замокана
+             DepositsApiTest,FilamentAdminTest,ExampleTest}.php   — 58 тестов, сеть замокана
 
 docker-compose.yml                       app + queue + scheduler + mysql + redis
 pint.json / phpstan.neon                 стиль (laravel preset + strict_types) и Larastan level 5
