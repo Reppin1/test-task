@@ -1,9 +1,9 @@
 FROM php:8.3-cli-alpine
 
-# Расширения: pdo_mysql (БД), bcmath/intl/zip (Laravel + Filament), opcache, pcntl (queue:work, schedule:work)
-RUN apk add --no-cache bash git unzip icu-dev libzip-dev mysql-client \
+# Расширения: pdo_mysql (Docker БД), pdo_sqlite (тесты), bcmath/intl/zip (Laravel + Filament), opcache, pcntl (queue:work, schedule:work)
+RUN apk add --no-cache bash git unzip icu-dev libzip-dev mysql-client sqlite-dev \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && docker-php-ext-install -j"$(nproc)" pdo_mysql bcmath intl zip opcache pcntl \
+    && docker-php-ext-install -j"$(nproc)" pdo_mysql pdo_sqlite bcmath intl zip opcache pcntl \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 

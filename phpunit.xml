@@ -18,22 +18,24 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="PULSE_ENABLED" value="false"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- Laravel reads $_SERVER before $_ENV, so server entries isolate tests from Docker's env_file. -->
+        <server name="APP_ENV" value="testing"/>
+        <server name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="/>
+        <server name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <server name="BCRYPT_ROUNDS" value="4"/>
+        <server name="CACHE_STORE" value="array"/>
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+        <server name="MAIL_MAILER" value="array"/>
+        <server name="PULSE_ENABLED" value="false"/>
+        <server name="QUEUE_CONNECTION" value="sync"/>
+        <server name="SESSION_DRIVER" value="array"/>
+        <server name="TELESCOPE_ENABLED" value="false"/>
         <!-- В тестах «ходим по HTTP», но только через Http::fake — реальных вызовов нет. -->
-        <env name="TRONSCAN_DRIVER" value="http"/>
-        <env name="TRONSCAN_API_KEY" value="test-api-key"/>
-        <env name="TRONSCAN_RETRY_TIMES" value="1"/>
-        <env name="TRONSCAN_RETRY_SLEEP_MS" value="0"/>
-        <env name="TRON_STRICT_ADDRESS_CHECKSUM" value="true"/>
+        <server name="TRONSCAN_DRIVER" value="http"/>
+        <server name="TRONSCAN_API_KEY" value="test-api-key"/>
+        <server name="TRONSCAN_RETRY_TIMES" value="1"/>
+        <server name="TRONSCAN_RETRY_SLEEP_MS" value="0"/>
+        <server name="TRON_STRICT_ADDRESS_CHECKSUM" value="true"/>
     </php>
 </phpunit>
